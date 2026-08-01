@@ -199,6 +199,16 @@
 
   .state p { margin: 0; max-width: 52ch; font-size: 15.5px; }
 
+  .state p a {
+    color: var(--signal);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(31, 63, 224, 0.35);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+  }
+
+  .state p a:hover { border-bottom-color: var(--signal); }
+
   footer {
     margin-top: 64px;
     font-family: "JetBrains Mono", monospace;
@@ -257,13 +267,13 @@
 
   <nav class="contact reveal" style="--d:240ms" aria-label="Contact">
     <a href="mailto:anurupbansal@gmail.com">anurupbansal@gmail.com</a>
-    <a href="https://github.com/" rel="me">GitHub</a>
-    <a href="https://linkedin.com/" rel="me">LinkedIn</a>
+    <a href="https://github.com/AnurupBansal/portfolio" rel="me">GitHub</a>
+    <a href="https://www.linkedin.com/in/anurup-bansal/" rel="me">LinkedIn</a>
   </nav>
 
   <div class="ledger-head reveal" style="--d:320ms">
     <span>Build states</span>
-    <span>6 total &nbsp;/&nbsp; 3 settled</span>
+    <span>6 total &nbsp;/&nbsp; 4 settled</span>
   </div>
 
   <ol class="ledger">
@@ -271,8 +281,8 @@
     <li class="state is-done reveal" style="--d:380ms">
       <p class="meta"><span class="idx">00</span> <span class="tag">settled</span></p>
       <h2>PROVISIONED</h2>
-      <p>One ARM box, Ubuntu 24.04. Firewall closed to everything but SSH and HTTP.
-         No managed platform — if it breaks, it's mine to fix.</p>
+      <p>One x86 box in Mumbai, Ubuntu 24.04. Two firewalls, three ports open,
+         root login disabled. No managed platform — if it breaks, it's mine to fix.</p>
     </li>
 
     <li class="state is-done reveal" style="--d:440ms">
@@ -282,22 +292,24 @@
          The boring part, done properly, once.</p>
     </li>
 
-    <li class="state is-current reveal" style="--d:500ms">
-      <p class="meta"><span class="idx">02</span> <span class="tag">current</span></p>
+    <li class="state is-done reveal" style="--d:500ms">
+      <p class="meta"><span class="idx">02</span> <span class="tag">settled</span></p>
       <h2>SERVING</h2>
-      <p>You're reading it. Static files, one container, no framework.
-         The point was to prove the pipe works before putting anything in it.</p>
+      <p>First bytes over TLS. Static files, one container, no framework —
+         proving the pipe worked before putting anything real in it.</p>
     </li>
 
-    <li class="state is-pending reveal" style="--d:560ms">
-      <p class="meta"><span class="idx">03</span> <span class="tag">pending</span></p>
+    <li class="state is-done reveal" style="--d:560ms">
+      <p class="meta"><span class="idx">03</span> <span class="tag">settled</span></p>
       <h2>API_LIVE</h2>
-      <p>A Go service takes over from the static handler. Health checks,
-         structured logs, deploy on push to main.</p>
+      <p>A Go binary serves this page from its own embedded filesystem, behind
+         a reverse proxy it never talks to directly. Push to main and it ships
+         itself — build, health check, swap. <a href="/api/health">/api/health</a>
+         will tell you which commit you're reading.</p>
     </li>
 
-    <li class="state is-pending reveal" style="--d:620ms">
-      <p class="meta"><span class="idx">04</span> <span class="tag">pending</span></p>
+    <li class="state is-current reveal" style="--d:620ms">
+      <p class="meta"><span class="idx">04</span> <span class="tag">current</span></p>
       <h2>OSM_SANDBOX</h2>
       <p>An order state machine you can drive yourself — and then break.
          Kill the vendor mid-flight, replay a webhook twice, watch it recover.</p>
@@ -313,8 +325,8 @@
   </ol>
 
   <footer class="reveal" style="--d:760ms">
-    Last state change: 02 → SERVING<br>
-    Next: 03 → API_LIVE
+    Last state change: 03 → API_LIVE<br>
+    Next: 04 → OSM_SANDBOX
   </footer>
 
 </div>
