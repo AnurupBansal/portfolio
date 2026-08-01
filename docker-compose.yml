@@ -18,7 +18,7 @@ services:
 
   api:
     # Built by GitHub Actions, pulled from the registry. Never built on the box.
-    image: ghcr.io/AnurupBansal/portfolio:latest
+    image: ghcr.io/anurupbansal/portfolio:latest
     container_name: api
     restart: unless-stopped
     # Deliberately no `ports:` — the API is reachable only from inside the
