@@ -1,0 +1,104 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you re-run a deploy from the Actions tab
+
+concurrency:
+  # If you push twice quickly, cancel the first deploy rather than racing.
+  group: deploy-main
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build ./...
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # required to push to GHCR
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # Provided automatically — no secret to create for this one.
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          # Lightsail is x86_64. Building only what you need keeps CI fast.
+          platforms: linux/amd64
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            COMMIT=${{ github.sha }}
+          # Cache layers in the GitHub Actions cache so repeat builds are fast.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Pinning the host key means a hijacked DNS record can't get CI to
+          # hand its deploy key to someone else's server.
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/id_ed25519 ubuntu@"$HOST" bash -s <<'REMOTE'
+            set -euo pipefail
+            cd ~/portfolio
+
+            docker compose pull api
+            docker compose up -d api
+
+            # Wait for the new container to answer before calling it a success.
+            for i in $(seq 1 15); do
+              if docker compose exec -T caddy wget -qO- http://api:8080/api/health >/dev/null 2>&1; then
+                echo "health check passed after ${i}s"
+                docker image prune -f
+                exit 0
+              fi
+              sleep 1
+            done
+
+            echo "health check failed — dumping logs" >&2
+            docker compose logs --tail=50 api >&2
+            exit 1
+          REMOTE

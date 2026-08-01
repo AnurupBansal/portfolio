@@ -1,0 +1,27 @@
+{
+	email anurupbansal@gmail.com
+}
+
+anurupbansal.in, www.anurupbansal.in {
+	encode zstd gzip
+
+	# Everything now goes to the Go service, which serves the site from its
+	# embedded filesystem. Caddy's job is TLS, compression, and headers.
+	reverse_proxy api:8080
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		X-Frame-Options           "DENY"
+		-Server
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+		format json
+	}
+}

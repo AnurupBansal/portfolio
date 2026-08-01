@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anurup Bansal — Backend Engineer</title>
+<meta name="description" content="Backend engineer. Event-driven systems in Go. This site is being built in public.">
+<meta name="color-scheme" content="light">
+<script>document.documentElement.className = 'js';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:    #E9ECEF;
+    --card:     #F4F6F8;
+    --ink:      #12161C;
+    --ink-soft: #59626E;
+    --rule:     #C7CDD5;
+    --signal:   #1F3FE0;
+    --done:     #1B6E4A;
+    --pending:  #8A6A15;
+    --rail: 22px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 0 24px 96px;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 96px 96px;
+    background-position: -1px -1px;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, transparent 20%, var(--paper) 78%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding-top: 88px;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+  }
+
+  h1 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 800;
+    font-size: clamp(44px, 11vw, 78px);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    margin: 0 0 18px;
+  }
+
+  .standfirst {
+    font-size: clamp(17px, 2.4vw, 19px);
+    max-width: 46ch;
+    margin: 0 0 8px;
+  }
+
+  .standfirst em { font-style: italic; color: var(--ink-soft); }
+
+  .contact {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    margin: 28px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+  }
+
+  .contact a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+    transition: border-color .15s, color .15s;
+  }
+
+  .contact a:hover,
+  .contact a:focus-visible { color: var(--signal); border-bottom-color: var(--signal); }
+
+  /* ---------- ledger ---------- */
+
+  .ledger-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 76px 0 0;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--ink);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  ol.ledger {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 calc(var(--rail) + 18px);
+    position: relative;
+  }
+
+  ol.ledger::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--rail) / 2);
+    top: 34px;
+    bottom: 34px;
+    width: 1.5px;
+    background: var(--rule);
+  }
+
+  li.state {
+    position: relative;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  li.state:last-child { border-bottom: none; }
+
+  li.state::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * (var(--rail) + 18px) + var(--rail) / 2 - 4.5px);
+    top: 30px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--rule);
+  }
+
+  li.is-done::before { background: var(--done); border-color: var(--done); }
+
+  li.is-current::before {
+    background: var(--signal);
+    border-color: var(--signal);
+    box-shadow: 0 0 0 5px rgba(31, 63, 224, 0.16);
+  }
+
+  .meta {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 12px;
+    margin-bottom: 7px;
+  }
+
+  .idx { color: var(--ink); }
+
+  .tag { margin-left: auto; letter-spacing: 0.12em; }
+  .is-done   .tag { color: var(--done); }
+  .is-current .tag { color: var(--signal); }
+  .is-pending .tag { color: var(--pending); }
+
+  .state h2 {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    margin: 0 0 5px;
+  }
+
+  .is-pending h2, .is-pending p { color: var(--ink-soft); }
+
+  .state p { margin: 0; max-width: 52ch; font-size: 15.5px; }
+
+  footer {
+    margin-top: 64px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+
+  a:focus-visible, li:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* ---------- the one orchestrated moment ---------- */
+
+  .js .reveal { opacity: 0; transform: translateY(8px); }
+
+  @keyframes settle {
+    to { opacity: 1; transform: none; }
+  }
+
+  .js.play .reveal {
+    animation: settle .5s cubic-bezier(.2,.7,.3,1) var(--d, 0ms) forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; }
+    .js.play .reveal { animation: none; }
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 0 20px 72px; background-size: 64px 64px; }
+    .wrap { padding-top: 56px; }
+    .ledger-head { margin-top: 56px; }
+    .meta { flex-wrap: wrap; gap: 8px; }
+    .tag { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow reveal" style="--d:0ms">Bengaluru, India</p>
+
+  <h1 class="reveal" style="--d:60ms">Anurup<br>Bansal</h1>
+
+  <p class="standfirst reveal" style="--d:140ms">
+    Backend engineer. I build event-driven systems in Go — order pipelines,
+    vendor integrations, and the state machines that keep them honest when
+    something downstream falls over.
+  </p>
+
+  <p class="standfirst reveal" style="--d:180ms">
+    <em>This site is being built in public. Here's where it is.</em>
+  </p>
+
+  <nav class="contact reveal" style="--d:240ms" aria-label="Contact">
+    <a href="mailto:anurupbansal@gmail.com">anurupbansal@gmail.com</a>
+    <a href="https://github.com/" rel="me">GitHub</a>
+    <a href="https://linkedin.com/" rel="me">LinkedIn</a>
+  </nav>
+
+  <div class="ledger-head reveal" style="--d:320ms">
+    <span>Build states</span>
+    <span>6 total &nbsp;/&nbsp; 3 settled</span>
+  </div>
+
+  <ol class="ledger">
+
+    <li class="state is-done reveal" style="--d:380ms">
+      <p class="meta"><span class="idx">00</span> <span class="tag">settled</span></p>
+      <h2>PROVISIONED</h2>
+      <p>One ARM box, Ubuntu 24.04. Firewall closed to everything but SSH and HTTP.
+         No managed platform — if it breaks, it's mine to fix.</p>
+    </li>
+
+    <li class="state is-done reveal" style="--d:440ms">
+      <p class="meta"><span class="idx">01</span> <span class="tag">settled</span></p>
+      <h2>TLS_ISSUED</h2>
+      <p>Certificates issued and renewing on their own, edge cache in front.
+         The boring part, done properly, once.</p>
+    </li>
+
+    <li class="state is-current reveal" style="--d:500ms">
+      <p class="meta"><span class="idx">02</span> <span class="tag">current</span></p>
+      <h2>SERVING</h2>
+      <p>You're reading it. Static files, one container, no framework.
+         The point was to prove the pipe works before putting anything in it.</p>
+    </li>
+
+    <li class="state is-pending reveal" style="--d:560ms">
+      <p class="meta"><span class="idx">03</span> <span class="tag">pending</span></p>
+      <h2>API_LIVE</h2>
+      <p>A Go service takes over from the static handler. Health checks,
+         structured logs, deploy on push to main.</p>
+    </li>
+
+    <li class="state is-pending reveal" style="--d:620ms">
+      <p class="meta"><span class="idx">04</span> <span class="tag">pending</span></p>
+      <h2>OSM_SANDBOX</h2>
+      <p>An order state machine you can drive yourself — and then break.
+         Kill the vendor mid-flight, replay a webhook twice, watch it recover.</p>
+    </li>
+
+    <li class="state is-pending reveal" style="--d:680ms">
+      <p class="meta"><span class="idx">05</span> <span class="tag">pending</span></p>
+      <h2>TELEMETRY</h2>
+      <p>A public dashboard for this box. Request rate, p99, error budget.
+         Nothing hidden, including the bad numbers.</p>
+    </li>
+
+  </ol>
+
+  <footer class="reveal" style="--d:760ms">
+    Last state change: 02 → SERVING<br>
+    Next: 03 → API_LIVE
+  </footer>
+
+</div>
+
+<script>
+  requestAnimationFrame(function () {
+    document.documentElement.classList.add('play');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  api:
+    # Built by GitHub Actions, pulled from the registry. Never built on the box.
+    image: ghcr.io/AnurupBansal/portfolio:latest
+    container_name: api
+    restart: unless-stopped
+    # Deliberately no `ports:` — the API is reachable only from inside the
+    # Docker network, as `api:8080`. Caddy is the sole public entry point.
+    # Publishing 8080 here would bypass ufw entirely, since Docker writes
+    # iptables rules beneath it.
+    expose:
+      - "8080"
+    environment:
+      LISTEN_ADDR: ":8080"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  caddy_data:
+  caddy_config:
