@@ -68,15 +68,18 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      HOST: ${{ secrets.DEPLOY_HOST }}
     steps:
-      - name: Deploy over SSH
+      # Checkout so the runner has the current Caddyfile and docker-compose.yml
+      # to ship to the server in the "Sync infra config" step below.
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH key and pinned host key
         env:
           SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          HOST: ${{ secrets.DEPLOY_HOST }}
           KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          set -euo pipefail
-
           mkdir -p ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
@@ -84,13 +87,35 @@ jobs:
           # hand its deploy key to someone else's server.
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
 
-          ssh -i ~/.ssh/id_ed25519 ubuntu@"$HOST" bash -s <<'REMOTE'
-            set -euo pipefail
+      # Config lands before anything restarts, so the reload below picks it up.
+      - name: Sync infra config
+        run: |
+          scp -i ~/.ssh/id_ed25519 Caddyfile docker-compose.yml \
+            ubuntu@"$HOST":~/portfolio/
+
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ubuntu@"$HOST" bash -euo pipefail <<'EOF'
             cd ~/portfolio
-
             docker compose pull api
-            docker compose up -d api
+            # up -d for ALL services, not just api, so a docker-compose.yml
+            # change actually takes effect — not only the api image.
+            docker compose up -d
+            # Validate before reload: a bad Caddyfile fails here with a clear
+            # message instead of an error buried in Caddy's reload output.
+            docker compose exec -T caddy caddy validate \
+              --config /etc/caddy/Caddyfile --adapter caddyfile
+            # reload is zero-downtime and does NOT re-issue certificates — they
+            # persist in the caddy_data volume — so running it every push costs
+            # nothing against Let's Encrypt's duplicate-cert rate limit.
+            docker compose exec -T caddy caddy reload \
+              --config /etc/caddy/Caddyfile --adapter caddyfile
+          EOF
 
+      - name: Health check
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ubuntu@"$HOST" bash -euo pipefail <<'EOF'
+            cd ~/portfolio
             # Wait for the new container to answer before calling it a success.
             for i in $(seq 1 15); do
               if docker compose exec -T caddy wget -qO- http://api:8080/api/health >/dev/null 2>&1; then
@@ -104,4 +129,4 @@ jobs:
             echo "health check failed — dumping logs" >&2
             docker compose logs --tail=50 api >&2
             exit 1
-          REMOTE
+          EOF
