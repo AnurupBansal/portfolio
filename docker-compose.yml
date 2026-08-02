@@ -29,6 +29,7 @@ services:
       - "8080"
     environment:
       LISTEN_ADDR: ":8080"
+      REGION: "ap-south-1"
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }

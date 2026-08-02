@@ -16,13 +16,15 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AnurupBansal/portfolio/internal/trace"
 	"github.com/AnurupBansal/portfolio/internal/web"
 )
 
 // Injected at build time via -ldflags. See Dockerfile.
 var (
-	version = "dev"
-	commit  = "unknown"
+	version   = "dev"
+	commit    = "unknown"
+	buildTime = "unknown"
 )
 
 var startedAt = time.Now()
@@ -94,6 +96,12 @@ func routes(logger *slog.Logger) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /api/health", handleHealth())
+	mux.Handle("GET /api/trace", trace.Handler(startedAt, trace.Build{
+		Version:   version,
+		Commit:    commit,
+		BuildTime: buildTime,
+		Region:    os.Getenv("REGION"),
+	}))
 	mux.Handle("GET /", web.StaticHandler())
 
 	return requestLogger(logger, mux)
@@ -108,6 +116,7 @@ func handleHealth() http.Handler {
 			"status":     "ok",
 			"version":    version,
 			"commit":     commit,
+			"build_time": buildTime,
 			"uptime_sec": int64(time.Since(startedAt).Seconds()),
 			"go":         runtime.Version(),
 			"goroutines": runtime.NumGoroutine(),

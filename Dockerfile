@@ -15,13 +15,14 @@ COPY . .
 
 ARG VERSION=dev
 ARG COMMIT=unknown
+ARG BUILD_TIME=unknown
 
 # CGO_ENABLED=0 produces a statically linked binary that runs on `scratch`.
 # -s -w strips the symbol table and DWARF data (~25% smaller, and you have
 # structured logs rather than needing stack symbols in production).
 RUN CGO_ENABLED=0 GOOS=linux go build \
 	-trimpath \
-	-ldflags="-s -w -X main.version=${VERSION} -X main.commit=${COMMIT}" \
+	-ldflags="-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.buildTime=${BUILD_TIME}" \
 	-o /out/server ./cmd/server
 
 # --- runtime ---

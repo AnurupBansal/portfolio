@@ -246,6 +246,162 @@
     .meta { flex-wrap: wrap; gap: 8px; }
     .tag { margin-left: 0; }
   }
+
+  /* ---------- this request (trace) ---------- */
+
+  .trace { margin: 4rem 0; }
+
+  .trace__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .trace__sub {
+    margin: 0 0 2rem;
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .trace__hops {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trace__hop {
+    position: relative;
+    padding: 1.6rem 1rem 0 0;
+  }
+
+  /* The rail: one hairline across all four hops, with a node at each. */
+  .trace__hop::before {
+    content: "";
+    position: absolute;
+    top: 0.32rem;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .trace__hop:last-child::before { right: 1rem; }
+
+  .trace__hop::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--rule);
+    transition: background 200ms ease;
+  }
+
+  .trace__hop[data-state="live"]::after { background: var(--done); }
+
+  /* An unproxied request is a real state, not an error. Hollow node. */
+  .trace__hop[data-state="bypassed"]::after {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--rule);
+  }
+
+  .trace__label,
+  .trace__name,
+  .trace__meta {
+    display: block;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .trace__label {
+    margin-bottom: 0.5rem;
+    color: var(--ink-soft);
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .trace__name {
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trace__meta {
+    margin-top: 0.3rem;
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    white-space: pre-line;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trace__timing {
+    margin: 1.8rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trace__journey {
+    margin: 0.7rem 0 0;
+    max-width: 60ch;
+    color: var(--ink-soft);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trace__again {
+    margin-top: 1.2rem;
+    padding: 0.4rem 0.85rem;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink-soft);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+
+  .trace__again:hover:not(:disabled),
+  .trace__again:focus-visible { color: var(--signal); border-color: var(--signal); }
+
+  .trace__again:disabled { opacity: 0.5; cursor: default; }
+
+  /* Below 640px the rail rotates to vertical, matching the ledger. */
+  @media (max-width: 640px) {
+    .trace__hops { grid-template-columns: 1fr; }
+
+    .trace__hop {
+      padding: 0 0 1.5rem 1.4rem;
+    }
+
+    .trace__hop::before {
+      top: 0.3rem;
+      bottom: -0.3rem;
+      left: 0.3rem;
+      right: auto;
+      border-top: 0;
+      border-left: 1px solid var(--rule);
+    }
+
+    .trace__hop:last-child::before { bottom: auto; height: 0; }
+    .trace__hop:last-child { padding-bottom: 0; }
+    .trace__label { margin-bottom: 0.2rem; }
+  }
 </style>
 </head>
 <body>
@@ -270,6 +426,47 @@
     <a href="https://github.com/AnurupBansal/portfolio" rel="me">GitHub</a>
     <a href="https://www.linkedin.com/in/anurup-bansal/" rel="me">LinkedIn</a>
   </nav>
+
+  <section class="trace reveal" id="trace" style="--d:280ms" aria-labelledby="trace-heading">
+    <header class="trace__head">
+      <h2 class="trace__title" id="trace-heading">This request</h2>
+      <p class="trace__sub">
+        Measured while this page loaded. Every value is from your own request —
+        nothing here is illustrative.
+      </p>
+    </header>
+
+    <ol class="trace__hops" id="trace-hops">
+      <li class="trace__hop" data-hop="client">
+        <span class="trace__label">your browser</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="edge">
+        <span class="trace__label">cloudflare</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="proxy">
+        <span class="trace__label">caddy</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="app">
+        <span class="trace__label">the app</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+    </ol>
+
+    <p class="trace__timing" id="trace-timing" role="status"></p>
+    <p class="trace__journey" id="trace-journey" role="status"></p>
+
+    <!-- JS-only control: kept hidden without scripting so it is never a dead
+         button. Re-runs the trace in place — turn a VPN on and watch the edge
+         (and the distance) move. -->
+    <button type="button" class="trace__again" id="trace-again" hidden>trace again ↻</button>
+  </section>
 
   <div class="ledger-head reveal" style="--d:320ms">
     <span>Build states</span>
@@ -335,6 +532,201 @@
   requestAnimationFrame(function () {
     document.documentElement.classList.add('play');
   });
+</script>
+
+<script>
+  (function () {
+    "use strict";
+
+    var TRACE_URL = new URL("/api/trace", location.origin).href;
+
+    function parseKV(text) {
+      var out = {};
+      text.trim().split("\n").forEach(function (line) {
+        var i = line.indexOf("=");
+        if (i > 0) out[line.slice(0, i)] = line.slice(i + 1);
+      });
+      return out;
+    }
+
+    function set(hop, state, name, meta) {
+      var el = document.querySelector('.trace__hop[data-hop="' + hop + '"]');
+      if (!el) return;
+      el.setAttribute("data-state", state);
+      // textContent, never innerHTML: /cdn-cgi/trace echoes the user agent and
+      // other client-controlled strings. None of it is rendered as markup here.
+      el.querySelector('[data-field="name"]').textContent = name;
+      el.querySelector('[data-field="meta"]').textContent = meta;
+    }
+
+    // Resource Timing measures the actual request. A stopwatch around fetch()
+    // would also count promise scheduling and JSON parsing.
+    function measure() {
+      var entries = performance.getEntriesByName
+        ? performance.getEntriesByName(TRACE_URL)
+        : [];
+      var e = entries[entries.length - 1];
+      if (!e || !e.responseStart || !e.requestStart) return null;
+
+      var app = null;
+      // serverTiming is same-origin only, and Safari came to it late.
+      if (e.serverTiming) {
+        e.serverTiming.forEach(function (s) {
+          if (s.name === "app") app = s.duration;
+        });
+      }
+      return { total: e.responseStart - e.requestStart, app: app };
+    }
+
+    function ms(n) {
+      return (n < 10 ? n.toFixed(2) : n.toFixed(1)) + " ms";
+    }
+
+    // "51.5°N, 0.5°W" from signed decimals. Empty when we have no fix.
+    function coords(lat, lon) {
+      if (!lat && !lon) return "";
+      return Math.abs(lat).toFixed(1) + "°" + (lat >= 0 ? "N" : "S") +
+        ", " + Math.abs(lon).toFixed(1) + "°" + (lon >= 0 ? "E" : "W");
+    }
+
+    // One honest sentence about the public-internet leg. The only precise
+    // number is edge→origin, where both endpoints are known; the visitor's own
+    // position is never claimed beyond "near their nearest edge".
+    function journey(o) {
+      var origin = o.origin_city || "the origin";
+      if (!o.via_edge || !o.edge) {
+        return "reached " + origin + " directly — no Cloudflare edge in the path.";
+      }
+      if (!o.edge_city) {
+        return "entered Cloudflare at the " + o.edge + " edge, then on to " + origin + ".";
+      }
+      if (o.edge_city === o.origin_city) {
+        return "your nearest edge (" + o.edge_city + ") is in the same city as " +
+          origin + ", so the public leg is almost nothing. Turn a VPN on and " +
+          "trace again to watch it stretch.";
+      }
+      var km = typeof o.distance_km === "number" ? Math.round(o.distance_km).toLocaleString() : "?";
+      return "≈ " + km + " km from the " + o.edge_city + " (" + o.edge + ") edge to " +
+        origin + " — that's the public-internet leg your request crossed.";
+    }
+
+    function render(edge, origin) {
+      // 1 — the browser's own leg, as the edge described it back to us.
+      set(
+        "client",
+        "live",
+        edge.http || "http",
+        (edge.tls || "TLS") + (edge.loc ? "\nfrom " + edge.loc : "")
+      );
+
+      // 2 — Cloudflare. The origin's CF-Ray is authoritative; /cdn-cgi/trace
+      // is the fallback for when the fetch to it failed but the ray arrived.
+      var colo = origin.edge || edge.colo || "";
+      if (origin.via_edge && colo) {
+        var where = origin.edge_city
+          ? origin.edge_city + " · " + coords(origin.edge_lat, origin.edge_lon)
+          : "edge colo";
+        set("edge", "live", colo, where + "\nproxied");
+      } else {
+        set("edge", "bypassed", "bypassed", "direct to origin\nno edge in path");
+      }
+
+      // 3 — Caddy. It terminated TLS; everything past it is plaintext on a
+      // private Docker network. This is the origin box's front door, so it
+      // carries the origin's location.
+      var here = origin.origin_city
+        ? origin.origin_city + " · " + coords(origin.origin_lat, origin.origin_lon)
+        : "reverse proxy";
+      set(
+        "proxy",
+        "live",
+        origin.region || "origin",
+        (origin.scheme || "?") + " terminated\n" + here
+      );
+
+      // 4 — the Go process.
+      var uptime = "";
+      if (typeof origin.uptime_sec === "number") {
+        var d = Math.floor(origin.uptime_sec / 86400);
+        var h = Math.floor((origin.uptime_sec % 86400) / 3600);
+        uptime = d > 0 ? d + "d " + h + "h" : h + "h";
+      }
+      set(
+        "app",
+        "live",
+        origin.go || "go",
+        (origin.commit ? origin.commit.slice(0, 7) : "") +
+          (uptime ? "\nup " + uptime : "")
+      );
+
+      var t = measure();
+      var note = document.getElementById("trace-timing");
+      if (!t) {
+        note.textContent = "timing unavailable in this browser";
+        return;
+      }
+      var app = t.app !== null && t.app !== undefined ? t.app : origin.app_ms;
+      var line = ms(t.total) + " for the round trip";
+      if (typeof app === "number") {
+        line += "  ·  " + ms(app) + " of that inside the app";
+        line += "  ·  " + ms(Math.max(0, t.total - app)) + " was network";
+      }
+      note.textContent = line;
+
+      document.getElementById("trace-journey").textContent = journey(origin);
+    }
+
+    function fail(message) {
+      ["client", "edge", "proxy", "app"].forEach(function (h) {
+        set(h, "idle", "—", "unavailable");
+      });
+      document.getElementById("trace-timing").textContent = message;
+      document.getElementById("trace-journey").textContent = "";
+    }
+
+    // Returns a promise so the "trace again" button can re-enable itself once a
+    // run settles. Resource Timing accumulates entries, so measure() reading the
+    // latest one always reflects this run.
+    function run() {
+      var edgeReq = fetch("/cdn-cgi/trace", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.text() : ""; })
+        .then(parseKV)
+        .catch(function () { return {}; }); // grey-clouded or local: fine
+
+      var originReq = fetch(TRACE_URL, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("trace returned " + r.status);
+          return r.json();
+        });
+
+      return Promise.all([edgeReq, originReq])
+        .then(function (both) { render(both[0], both[1]); })
+        .catch(function () {
+          fail("the trace endpoint did not respond — the page is still fine");
+        });
+    }
+
+    function init() {
+      var again = document.getElementById("trace-again");
+      if (again) {
+        again.hidden = false; // reveal only now that scripting is confirmed
+        again.addEventListener("click", function () {
+          again.disabled = true;
+          document.getElementById("trace-journey").textContent = "tracing again…";
+          // then(fn, fn): re-enable whether the re-run succeeded or failed.
+          run().then(reenable, reenable);
+          function reenable() { again.disabled = false; }
+        });
+      }
+      run();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
 </script>
 </body>
 </html>
