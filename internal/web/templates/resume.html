@@ -1,0 +1,138 @@
+{{template "head" .}}
+{{template "header" .}}
+<main class="shell">
+
+  <section class="resume-head">
+    <div>
+      <p class="resume-head__eyebrow" data-reveal style="--d:0ms">Résumé · updated 2026</p>
+      <h1 data-reveal style="--d:60ms">{{.Name}}</h1>
+      <p class="resume-head__role" data-reveal style="--d:110ms">{{.Role}} · {{.Location}}</p>
+      <p class="resume-head__lead" data-reveal style="--d:150ms">{{.Tagline}}</p>
+    </div>
+    <ul class="contact-list" data-reveal style="--d:210ms">
+      {{range .Links}}<li><a href="{{.Href}}"><svg width="14" height="14" aria-hidden="true"><use href="#i-{{if eq .Label "email"}}mail{{else if eq .Label "github"}}git{{else}}link{{end}}"></use></svg>{{.Text}}</a></li>{{end}}
+      <li><a href="/api/resume"><svg width="14" height="14" aria-hidden="true"><use href="#i-braces"></use></svg>/api/resume</a></li>
+    </ul>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head">
+      <h2>Experience</h2>
+      <span class="section-note">3+ years of production backends</span>
+    </div>
+    <ol class="timeline">
+      {{range $i, $j := .Experience}}
+      <li class="job{{if $j.Current}} job--current{{end}}" data-reveal style="--d:{{mul $i 70}}ms">
+        <span class="job__node"></span>
+        <div>
+          <h3 class="job__title">{{$j.Title}} <span class="sep">·</span> {{$j.Org}}</h3>
+          <p class="job__meta">{{$j.Location}}</p>
+          <p class="job__summary">{{$j.Summary}}</p>
+        </div>
+        <span class="job__period">{{$j.Period}}</span>
+      </li>
+      {{end}}
+    </ol>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head"><h2>Stack</h2></div>
+    <p class="stack__hint" data-reveal style="--d:0ms">Grouped by how much I've actually used them. Tap one to filter the systems below.</p>
+    {{range $gi, $g := .Stack}}
+    <div class="stack__group" data-reveal style="--d:{{mul $gi 50}}ms">
+      <span class="stack__label">{{$g.Label}}</span>
+      <ul class="stack__items">
+        {{range $g.Items}}<li><button type="button" class="tag" data-tag="{{.Name}}"><svg width="15" height="15" aria-hidden="true"><use href="#{{.Icon}}"></use></svg>{{.Name}}</button></li>{{end}}
+      </ul>
+    </div>
+    {{end}}
+    <div class="stack__group" data-reveal style="--d:250ms">
+      <span class="stack__label">in the loop daily</span>
+      <ul class="stack__items">
+        {{range .Tools}}<li class="tool"><svg width="15" height="15" aria-hidden="true"><use href="#i-spark"></use></svg>{{.}}</li>{{end}}
+      </ul>
+    </div>
+    <p class="filter-note" data-filter-note role="status"></p>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head">
+      <h2>Systems</h2>
+      <span class="section-note">organised by what was built, not by job held</span>
+    </div>
+    <div data-systems>
+      {{range $i, $s := .Systems}}
+      <article class="system" id="{{$s.Slug}}" data-system data-stack="{{range $s.Stack}}{{.}}|{{end}}">
+        <span class="system__num">{{printf "%02d" (inc $i)}}</span>
+        <div>
+          <h3 class="system__title">{{$s.Title}}</h3>
+          <p class="system__meta"><span class="system__org">{{$s.Org}}</span><span>{{$s.Period}}</span></p>
+          <p class="system__headline"><svg width="15" height="15" aria-hidden="true"><use href="#{{$s.Icon}}"></use></svg>{{$s.Headline}}</p>
+          <p class="system__summary">{{$s.Summary}}</p>
+          <ul class="system__stack">{{range $s.Stack}}<li><svg width="13" height="13" aria-hidden="true"><use href="#{{icon .}}"></use></svg>{{.}}</li>{{end}}</ul>
+        </div>
+      </article>
+      {{end}}
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head"><h2>Education</h2></div>
+    {{range .Education}}
+    <div class="edu" data-reveal style="--d:0ms">
+      <svg class="edu__icon-accent" width="20" height="20" aria-hidden="true"><use href="#i-cap"></use></svg>
+      <div>
+        <p class="edu__degree">{{.Degree}}</p>
+        <p class="edu__sub">{{.School}}</p>
+      </div>
+      <span class="edu__meta">{{.Period}}</span>
+    </div>
+    {{end}}
+    {{if .Languages}}
+    <div class="edu" data-reveal style="--d:60ms">
+      <svg class="edu__icon-muted" width="20" height="20" aria-hidden="true"><use href="#i-globe"></use></svg>
+      <p class="edu__sub">Languages — {{join .Languages ", "}}</p>
+      <span class="edu__meta">IN</span>
+    </div>
+    {{end}}
+  </section>
+
+</main>
+
+<script>
+  (function () {
+    "use strict";
+    var systems = Array.prototype.slice.call(document.querySelectorAll("[data-system]"));
+    var tags = Array.prototype.slice.call(document.querySelectorAll("[data-tag]"));
+    var note = document.querySelector("[data-filter-note]");
+    var active = null;
+
+    tags.forEach(function (btn) {
+      var t = btn.getAttribute("data-tag");
+      var hits = systems.filter(function (s) {
+        return s.getAttribute("data-stack").indexOf(t + "|") !== -1;
+      });
+      // A tag no system uses is listed but never offered as a filter.
+      if (!hits.length) {
+        btn.disabled = true;
+        btn.title = "no system tagged " + t + " yet";
+        return;
+      }
+      btn.addEventListener("click", function () {
+        active = active === t ? null : t;
+        tags.forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b.getAttribute("data-tag") === active));
+        });
+        systems.forEach(function (s) {
+          s.hidden = !!active && s.getAttribute("data-stack").indexOf(active + "|") === -1;
+        });
+        // textContent, never innerHTML — the tag names are static, but this is
+        // the house rule for anything written into the DOM at runtime.
+        note.textContent = active
+          ? hits.length + " system" + (hits.length === 1 ? "" : "s") + " using " + active + " — tap again to clear"
+          : "";
+      });
+    });
+  })();
+</script>
+{{template "footer" .}}

@@ -1,0 +1,121 @@
+{{template "head" .}}
+{{template "header" .}}
+<main class="shell">
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow" data-reveal style="--d:0ms">
+        <svg width="13" height="13" aria-hidden="true"><use href="#i-globe"></use></svg>
+        {{.Location}} · UTC+05:30
+      </p>
+      <h1 class="hero__title" data-reveal style="--d:70ms">Anurup<br>Bansal<span class="dot">.</span></h1>
+      <p class="hero__lead" data-reveal style="--d:150ms">{{.Tagline}}</p>
+      <p class="hero__sub" data-reveal style="--d:190ms">
+        Order pipelines, vendor integrations, and the state machines that keep them
+        honest when something downstream falls over.
+      </p>
+      <div class="hero__actions" data-reveal style="--d:250ms">
+        {{range .Links}}
+        <a class="chip-link" href="{{.Href}}">
+          <svg width="14" height="14" aria-hidden="true"><use href="#i-{{if eq .Label "email"}}mail{{else if eq .Label "github"}}git{{else}}link{{end}}"></use></svg>{{.Text}}
+        </a>
+        {{end}}
+      </div>
+    </div>
+
+    <figure class="hero__figure" data-reveal style="--d:320ms">
+      <figcaption class="hero__figcap">
+        <span>order · event flow</span>
+        <span class="live"><span class="live-dot"></span>live</span>
+      </figcaption>
+      <svg class="hero__diagram" viewBox="0 0 360 240" role="img" aria-label="Diagram: client to API to Kafka to workers and ledger">
+        <g stroke="#d7d3d3" stroke-width="1">
+          <path d="M0 60h360M0 120h360M0 180h360M90 0v240M180 0v240M270 0v240"></path>
+        </g>
+        <g stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="7 7" class="flow">
+          <path d="M62 60h68"></path><path d="M170 74v34"></path><path d="M170 132v34"></path><path d="M210 180h58"></path>
+        </g>
+        <g fill="none" stroke="var(--ink)" stroke-width="2">
+          <rect x="20" y="44" width="42" height="32"></rect>
+          <rect x="130" y="44" width="80" height="30"></rect>
+          <rect x="130" y="166" width="80" height="28"></rect>
+          <rect x="268" y="166" width="72" height="28"></rect>
+        </g>
+        <rect x="130" y="108" width="80" height="24" fill="var(--accent)" stroke="var(--accent)"></rect>
+        <g font-family="'JetBrains Mono',monospace" font-size="9.5" fill="var(--ink)" letter-spacing="0.08em">
+          <text x="26" y="63">client</text>
+          <text x="138" y="63">api · go</text>
+          <text x="138" y="124" fill="#fff">kafka</text>
+          <text x="138" y="184">workers</text>
+          <text x="276" y="184">ledger</text>
+        </g>
+        <circle cx="41" cy="60" r="4" fill="var(--accent)" class="live-dot"></circle>
+      </svg>
+    </figure>
+  </section>
+
+  <section class="stats">
+    <div class="stat" data-reveal style="--d:60ms">
+      <p class="stat__label">transacted / day</p>
+      <p class="stat__value">₹<span data-count="5">5</span>–<span data-count="10">10</span> Cr</p>
+    </div>
+    <div class="stat" data-reveal style="--d:120ms">
+      <p class="stat__label">systems shipped</p>
+      <p class="stat__value"><span data-count="{{len .Systems}}">{{len .Systems}}</span></p>
+    </div>
+    <div class="stat stat--accent" data-reveal style="--d:180ms">
+      <p class="stat__label">fewer order failures</p>
+      <p class="stat__value"><span data-count="30">30</span>–<span data-count="40">40</span>%</p>
+    </div>
+    <div class="stat" data-reveal style="--d:240ms">
+      <p class="stat__label">in production since</p>
+      <p class="stat__value"><span data-count="2022">2022</span></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Selected work</h2>
+      <a class="section-link" href="/resume">all {{len .Systems}} systems <svg width="13" height="13" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+    </div>
+    <ul class="work__list">
+      {{range $i, $s := .Featured}}
+      <li class="work__item" data-reveal style="--d:{{mul $i 80}}ms">
+        <a class="work__row" href="/resume#{{$s.Slug}}">
+          <span class="work__num">{{printf "%02d" (inc $i)}}</span>
+          <span class="work__body">
+            <span class="work__name">{{$s.Title}}</span>
+            <span class="work__headline"><svg width="13" height="13" aria-hidden="true"><use href="#{{$s.Icon}}"></use></svg>{{$s.Headline}}</span>
+          </span>
+          <span class="work__meta">{{$s.Org}} · {{$s.Period}}<br>{{join $s.Stack ", "}}</span>
+          <span class="work__arrow"><svg width="15" height="15" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+        </a>
+      </li>
+      {{end}}
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Operates daily</h2></div>
+    <ul class="techlist" data-reveal style="--d:60ms">
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Go"}}"></use></svg>Go</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Node.js"}}"></use></svg>Node.js</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Kafka"}}"></use></svg>Kafka</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Redis"}}"></use></svg>Redis</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "MySQL"}}"></use></svg>MySQL</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "OpenSearch"}}"></use></svg>OpenSearch</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Grafana"}}"></use></svg>Grafana</li>
+      <li><svg width="16" height="16" aria-hidden="true"><use href="#{{icon "Docker"}}"></use></svg>Docker</li>
+    </ul>
+  </section>
+
+  <section class="banner" data-reveal style="--d:0ms">
+    <div>
+      <p class="banner__kicker">Built in public</p>
+      <p class="banner__title">The site is a system you can hit.</p>
+    </div>
+    <a class="banner__cta" href="/playground">Open playground <svg width="16" height="16" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+  </section>
+
+</main>
+{{template "footer" .}}

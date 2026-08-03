@@ -1,0 +1,315 @@
+{{template "head" .}}
+{{template "header" .}}
+<main class="shell">
+
+  <section class="pg-hero">
+    <p class="pg-hero__kicker" data-reveal style="--d:0ms"><span class="live-dot"></span>work in progress</p>
+    <h1 data-reveal style="--d:60ms">Playground</h1>
+    <p class="pg-hero__lead" data-reveal style="--d:120ms">
+      This site is being built in public. Everything below is either running right now or
+      queued next — no roadmap theatre, just the build states of one box in Mumbai.
+    </p>
+  </section>
+
+  <section class="section--tight" aria-labelledby="trace-heading">
+    <div class="section-head">
+      <h2 id="trace-heading">This request · live trace</h2>
+      <span class="section-note">measured on load</span>
+    </div>
+
+    <p class="trace__intro" data-reveal style="--d:0ms">
+      Every value here is measured from your own request — nothing is illustrative.
+      Turn a VPN on, trace again, and watch the edge move.
+    </p>
+
+    <ol class="trace__hops" data-reveal style="--d:60ms">
+      <li class="trace__hop" data-hop="client">
+        <span class="trace__label">your browser</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="edge">
+        <span class="trace__label">cloudflare</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="proxy">
+        <span class="trace__label">caddy</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+      <li class="trace__hop" data-hop="app">
+        <span class="trace__label">the app</span>
+        <span class="trace__name" data-field="name">—</span>
+        <span class="trace__meta" data-field="meta">measuring</span>
+      </li>
+    </ol>
+
+    <p class="trace__timing" id="trace-timing" role="status"></p>
+    <p class="trace__journey" id="trace-journey" role="status"></p>
+
+    <!-- JS-only: hidden without scripting so it is never a dead button. -->
+    <button type="button" class="trace__again" id="trace-again" hidden>
+      <svg width="14" height="14" aria-hidden="true"><use href="#i-activity"></use></svg>trace again
+    </button>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head">
+      <h2>Build states</h2>
+      <span class="section-note">6 total / 4 settled</span>
+    </div>
+    <ol class="ledger">
+      <li class="state" data-reveal style="--d:0ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">00</span><span class="status">settled</span></p>
+        <h3>PROVISIONED</h3>
+        <p>One x86 box in Mumbai, Ubuntu 24.04. Two firewalls, three ports open, root login disabled. No managed platform — if it breaks, it's mine to fix.</p>
+      </li>
+      <li class="state" data-reveal style="--d:60ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">01</span><span class="status">settled</span></p>
+        <h3>TLS_ISSUED</h3>
+        <p>Certificates issued and renewing on their own, edge cache in front. The boring part, done properly, once.</p>
+      </li>
+      <li class="state" data-reveal style="--d:120ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">02</span><span class="status">settled</span></p>
+        <h3>SERVING</h3>
+        <p>First bytes over TLS. Static files, one container, no framework — proving the pipe worked before putting anything real in it.</p>
+      </li>
+      <li class="state" data-reveal style="--d:180ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">03</span><span class="status">settled</span></p>
+        <h3>API_LIVE</h3>
+        <p>A Go binary serves this page from its own embedded filesystem, behind a reverse proxy it never talks to directly. Push to main and it ships itself — build, health check, swap. <a href="/api/health">/api/health</a> will tell you which commit you're reading.</p>
+      </li>
+      <li class="state state--current" data-reveal style="--d:240ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">04</span><span class="status">current</span></p>
+        <h3>OSM_SANDBOX</h3>
+        <p>An order state machine you can drive yourself — and then break. Kill the vendor mid-flight, replay a webhook twice, watch it recover.</p>
+      </li>
+      <li class="state state--pending" data-reveal style="--d:300ms">
+        <span class="state__node"></span>
+        <p class="state__meta"><span class="idx">05</span><span class="status">pending</span></p>
+        <h3>TELEMETRY</h3>
+        <p>A public dashboard for this box. Request rate, p99, error budget. Nothing hidden, including the bad numbers.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section--tight">
+    <div class="section-head"><h2>Endpoints you can hit</h2></div>
+    <div class="endpoints" data-reveal style="--d:0ms">
+      <a class="endpoint" href="/api/health">
+        <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-gauge"></use></svg>/api/health</span>
+        <span class="endpoint__desc">Which commit you're reading, and how long it's been up.</span>
+      </a>
+      <a class="endpoint" href="/api/trace">
+        <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-net"></use></svg>/api/trace</span>
+        <span class="endpoint__desc">The origin's own view of the request that fetched this page.</span>
+      </a>
+      <a class="endpoint" href="/api/resume">
+        <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-braces"></use></svg>/api/resume</span>
+        <span class="endpoint__desc">All {{len .Systems}} systems as JSON — same source as the résumé page.</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  (function () {
+    "use strict";
+
+    var TRACE_URL = new URL("/api/trace", location.origin).href;
+
+    function parseKV(text) {
+      var out = {};
+      text.trim().split("\n").forEach(function (line) {
+        var i = line.indexOf("=");
+        if (i > 0) out[line.slice(0, i)] = line.slice(i + 1);
+      });
+      return out;
+    }
+
+    function set(hop, state, name, meta) {
+      var el = document.querySelector('.trace__hop[data-hop="' + hop + '"]');
+      if (!el) return;
+      el.setAttribute("data-state", state);
+      // textContent, never innerHTML: /cdn-cgi/trace echoes the user agent and
+      // other client-controlled strings. None of it is rendered as markup here.
+      el.querySelector('[data-field="name"]').textContent = name;
+      el.querySelector('[data-field="meta"]').textContent = meta;
+    }
+
+    // Resource Timing measures the actual request. A stopwatch around fetch()
+    // would also count promise scheduling and JSON parsing.
+    function measure() {
+      var entries = performance.getEntriesByName
+        ? performance.getEntriesByName(TRACE_URL)
+        : [];
+      var e = entries[entries.length - 1];
+      if (!e || !e.responseStart || !e.requestStart) return null;
+
+      var app = null;
+      // serverTiming is same-origin only, and Safari came to it late.
+      if (e.serverTiming) {
+        e.serverTiming.forEach(function (s) {
+          if (s.name === "app") app = s.duration;
+        });
+      }
+      return { total: e.responseStart - e.requestStart, app: app };
+    }
+
+    function ms(n) {
+      return (n < 10 ? n.toFixed(2) : n.toFixed(1)) + " ms";
+    }
+
+    // "51.5°N, 0.5°W" from signed decimals. Empty when we have no fix.
+    function coords(lat, lon) {
+      if (!lat && !lon) return "";
+      return Math.abs(lat).toFixed(1) + "°" + (lat >= 0 ? "N" : "S") +
+        ", " + Math.abs(lon).toFixed(1) + "°" + (lon >= 0 ? "E" : "W");
+    }
+
+    // One honest sentence about the public-internet leg. The only precise
+    // number is edge→origin, where both endpoints are known; the visitor's own
+    // position is never claimed beyond "near their nearest edge".
+    function journey(o) {
+      var origin = o.origin_city || "the origin";
+      if (!o.via_edge || !o.edge) {
+        return "reached " + origin + " directly — no Cloudflare edge in the path.";
+      }
+      if (!o.edge_city) {
+        return "entered Cloudflare at the " + o.edge + " edge, then on to " + origin + ".";
+      }
+      if (o.edge_city === o.origin_city) {
+        return "your nearest edge (" + o.edge_city + ") is in the same city as " +
+          origin + ", so the public leg is almost nothing. Turn a VPN on and " +
+          "trace again to watch it stretch.";
+      }
+      var km = typeof o.distance_km === "number" ? Math.round(o.distance_km).toLocaleString() : "?";
+      return "≈ " + km + " km from the " + o.edge_city + " (" + o.edge + ") edge to " +
+        origin + " — that's the public-internet leg your request crossed.";
+    }
+
+    function render(edge, origin) {
+      // 1 — the browser's own leg, as the edge described it back to us.
+      set(
+        "client",
+        "live",
+        edge.http || "http",
+        (edge.tls || "TLS") + (edge.loc ? "\nfrom " + edge.loc : "")
+      );
+
+      // 2 — Cloudflare. The origin's CF-Ray is authoritative; /cdn-cgi/trace
+      // is the fallback for when the fetch to it failed but the ray arrived.
+      var colo = origin.edge || edge.colo || "";
+      if (origin.via_edge && colo) {
+        var where = origin.edge_city
+          ? origin.edge_city + " · " + coords(origin.edge_lat, origin.edge_lon)
+          : "edge colo";
+        set("edge", "live", colo, where + "\nproxied");
+      } else {
+        set("edge", "bypassed", "bypassed", "direct to origin\nno edge in path");
+      }
+
+      // 3 — Caddy. It terminated TLS; everything past it is plaintext on a
+      // private Docker network. This is the origin box's front door, so it
+      // carries the origin's location.
+      var here = origin.origin_city
+        ? origin.origin_city + " · " + coords(origin.origin_lat, origin.origin_lon)
+        : "reverse proxy";
+      set(
+        "proxy",
+        "live",
+        origin.region || "origin",
+        (origin.scheme || "?") + " terminated\n" + here
+      );
+
+      // 4 — the Go process.
+      var uptime = "";
+      if (typeof origin.uptime_sec === "number") {
+        var d = Math.floor(origin.uptime_sec / 86400);
+        var h = Math.floor((origin.uptime_sec % 86400) / 3600);
+        uptime = d > 0 ? d + "d " + h + "h" : h + "h";
+      }
+      set(
+        "app",
+        "live",
+        origin.go || "go",
+        (origin.commit ? origin.commit.slice(0, 7) : "") +
+          (uptime ? "\nup " + uptime : "")
+      );
+
+      var t = measure();
+      var note = document.getElementById("trace-timing");
+      if (!t) {
+        note.textContent = "timing unavailable in this browser";
+        return;
+      }
+      var app = t.app !== null && t.app !== undefined ? t.app : origin.app_ms;
+      var line = ms(t.total) + " for the round trip";
+      if (typeof app === "number") {
+        line += "  ·  " + ms(app) + " of that inside the app";
+        line += "  ·  " + ms(Math.max(0, t.total - app)) + " was network";
+      }
+      note.textContent = line;
+
+      document.getElementById("trace-journey").textContent = journey(origin);
+    }
+
+    function fail(message) {
+      ["client", "edge", "proxy", "app"].forEach(function (h) {
+        set(h, "idle", "—", "unavailable");
+      });
+      document.getElementById("trace-timing").textContent = message;
+      document.getElementById("trace-journey").textContent = "";
+    }
+
+    // Returns a promise so the "trace again" button can re-enable itself once a
+    // run settles. Resource Timing accumulates entries, so measure() reading the
+    // latest one always reflects this run.
+    function run() {
+      var edgeReq = fetch("/cdn-cgi/trace", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.text() : ""; })
+        .then(parseKV)
+        .catch(function () { return {}; }); // grey-clouded or local: fine
+
+      var originReq = fetch(TRACE_URL, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("trace returned " + r.status);
+          return r.json();
+        });
+
+      return Promise.all([edgeReq, originReq])
+        .then(function (both) { render(both[0], both[1]); })
+        .catch(function () {
+          fail("the trace endpoint did not respond — the page is still fine");
+        });
+    }
+
+    function init() {
+      var again = document.getElementById("trace-again");
+      if (again) {
+        again.hidden = false; // reveal only now that scripting is confirmed
+        again.addEventListener("click", function () {
+          again.disabled = true;
+          document.getElementById("trace-journey").textContent = "tracing again…";
+          run().then(reenable, reenable);
+          function reenable() { again.disabled = false; }
+        });
+      }
+      run();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>
+{{template "footer" .}}

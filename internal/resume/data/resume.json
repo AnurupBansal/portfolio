@@ -1,0 +1,238 @@
+{
+  "name": "Anurup Bansal",
+  "role": "Backend engineer",
+  "location": "Bengaluru, India",
+  "tagline": "Go and event-driven systems. Mostly the kind that must not lose money when they fail.",
+  "links": [
+    { "label": "email", "href": "mailto:anurupbansal@gmail.com", "text": "anurupbansal@gmail.com" },
+    { "label": "github", "href": "https://github.com/AnurupBansal", "text": "AnurupBansal" },
+    { "label": "linkedin", "href": "https://www.linkedin.com/in/anurup-bansal/", "text": "anurup-bansal" }
+  ],
+  "stack": [
+    {
+      "label": "build in daily",
+      "items": [
+        { "name": "Go", "icon": "i-code" },
+        { "name": "Node.js", "icon": "i-hex" }
+      ]
+    },
+    {
+      "label": "shipped in production",
+      "items": [
+        { "name": "PHP", "icon": "i-file" },
+        { "name": "Spring Boot", "icon": "i-leaf" }
+      ]
+    },
+    {
+      "label": "operate",
+      "items": [
+        { "name": "Kafka", "icon": "i-waves" },
+        { "name": "Redis", "icon": "i-zap" },
+        { "name": "MySQL", "icon": "i-db" },
+        { "name": "PostgreSQL", "icon": "i-db" },
+        { "name": "MongoDB", "icon": "i-layers" },
+        { "name": "OpenSearch", "icon": "i-search" },
+        { "name": "AWS S3", "icon": "i-drive" },
+        { "name": "AWS SQS", "icon": "i-inbox" },
+        { "name": "Grafana", "icon": "i-activity" },
+        { "name": "Docker", "icon": "i-box" }
+      ]
+    },
+    {
+      "label": "secure with",
+      "items": [
+        { "name": "Google OAuth", "icon": "i-shield" },
+        { "name": "JWT", "icon": "i-key" }
+      ]
+    }
+  ],
+  "tools": ["Claude", "Gemini", "Codex"],
+  "experience": [
+    {
+      "title": "Backend Developer",
+      "org": "STAN",
+      "location": "Bengaluru, India · digital gift cards & coupons",
+      "period": "Nov 2025 — present",
+      "summary": "Go services behind high-volume transactional workflows and vendor fulfilment — the B2B platform, the order state machine, and the integrations underneath them.",
+      "current": true
+    },
+    {
+      "title": "Software Engineer",
+      "org": "Pharmeasy",
+      "location": "Remote · high-traffic e-commerce",
+      "period": "Jul 2022 – Sep 2024",
+      "summary": "Backend services and REST APIs across Node.js, Spring Boot, Go and PHP, with end-to-end ownership of monitoring, debugging and production incidents.",
+      "current": false
+    },
+    {
+      "title": "Software Engineer Intern",
+      "org": "Pharmeasy",
+      "location": "Remote",
+      "period": "Jan – Jun 2022",
+      "summary": "Node.js and MySQL on Sequelize — migrations, seed scripts and table associations — plus Redis caching and the scheduled feeds to the ad platforms.",
+      "current": false
+    }
+  ],
+  "education": [
+    { "degree": "B.E., Computer Science & Engineering", "school": "Thapar University", "period": "2018 – 2022" }
+  ],
+  "languages": ["English", "Hindi"],
+  "systems": [
+    {
+      "slug": "b2b-ordering-platform",
+      "title": "B2B ordering platform",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "₹5–10 Cr/day, fully event-driven",
+      "icon": "i-net",
+      "summary": "Launched a business-to-business ordering platform built on an event-driven architecture, carrying ₹5–10 Crore of transactions a day.",
+      "hard_part": "TODO — what makes this hard is that event-driven means failures are asynchronous and partial: an order can be half-committed across services with no single place to look. Write two or three sentences on how the system stays correct anyway.",
+      "stack": ["Go"],
+      "featured": true
+    },
+    {
+      "slug": "order-state-machine",
+      "title": "Order State Machine refactor",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "vendor onboarding 50–60% faster",
+      "icon": "i-cpu",
+      "summary": "Reworked the Order State Machine that every order moves through, cutting the time to build new flows and to onboard a new vendor by 50–60%.",
+      "hard_part": "TODO — the number is only convincing with the mechanism. What did onboarding a vendor require before the refactor, and what does it require now? If vendor behaviour moved from branches in the order flow into configuration or a per-vendor adapter, say that.",
+      "stack": ["Go"],
+      "featured": true
+    },
+    {
+      "slug": "legacy-to-go-migration",
+      "title": "Legacy workflow migration",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "order failures down 30–40%",
+      "icon": "i-shield",
+      "summary": "Moved critical order workflows off legacy systems onto Go microservices with explicit failure handling, reducing order failure rates by 30–40%.",
+      "hard_part": "TODO — name the failure handling. Retries with backoff, idempotency keys, compensating transactions, dead-letter queues: which of these did the legacy path lack? This is the single most interview-relevant sentence on the page.",
+      "stack": ["Go"],
+      "featured": true
+    },
+    {
+      "slug": "vendor-integrations",
+      "title": "Vendor integration layer",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "Euronet, Flipkart, GyFTR, SuperCoins",
+      "icon": "i-inbox",
+      "summary": "Integrated third-party fulfilment vendors covering vouchers, rewards, recharges and gift cards — Euronet, Flipkart, GyFTR and Flipkart SuperCoins.",
+      "hard_part": "TODO — every vendor has a different idea of what a timeout means. Describe one concrete disagreement between two of these vendors and how the integration layer absorbed it.",
+      "stack": ["Go"],
+      "featured": false
+    },
+    {
+      "slug": "mobile-recharge",
+      "title": "Mobile recharge",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "automated fulfilment on Euronet APIs",
+      "icon": "i-zap",
+      "summary": "Developed and integrated a mobile recharge system on the Euronet APIs, so recharge orders are processed automatically inside the platform rather than handed off.",
+      "hard_part": "",
+      "stack": ["Go"],
+      "featured": false
+    },
+    {
+      "slug": "discovery-and-search",
+      "title": "Discovery and search",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "OpenSearch, personalised storefront",
+      "icon": "i-search",
+      "summary": "Built personalisation and discovery features — recently purchased, similar inventory, storefront recommendations — and the search behind them on Amazon OpenSearch.",
+      "hard_part": "TODO — optional for this one. If there was a latency or index-freshness tradeoff worth naming, name it; otherwise delete this field.",
+      "stack": ["Go", "OpenSearch"],
+      "featured": false
+    },
+    {
+      "slug": "auth",
+      "title": "Authentication and authorisation",
+      "org": "STAN",
+      "period": "Nov 2025 — present",
+      "headline": "Google OAuth and JWT, internal and external",
+      "icon": "i-shield",
+      "summary": "Implemented authentication and authorisation with Google OAuth and JWT across both customer-facing and internal services.",
+      "hard_part": "",
+      "stack": ["Go", "Google OAuth", "JWT"],
+      "featured": false
+    },
+    {
+      "slug": "platform-services",
+      "title": "Platform services and REST APIs",
+      "org": "Pharmeasy",
+      "period": "Jul 2022 – Sep 2024",
+      "headline": "four stacks, one pager rota",
+      "icon": "i-term",
+      "summary": "Built and maintained backend services and REST APIs across Node.js, Spring Boot, Go and PHP — and owned their reliability end to end: monitoring, debugging and production incident resolution on a high-traffic e-commerce platform.",
+      "hard_part": "",
+      "stack": ["Node.js", "Spring Boot", "Go", "PHP", "MySQL"],
+      "featured": false
+    },
+    {
+      "slug": "backlink-automation",
+      "title": "Backlink automation",
+      "org": "Pharmeasy",
+      "period": "Jul 2022 – Sep 2024",
+      "headline": "Kafka pipelines across the catalogue",
+      "icon": "i-waves",
+      "summary": "Automated backlink lifecycle management through Kafka pipelines covering medicine product pages, diagnostics and category pages, improving search rankings at catalogue scale.",
+      "hard_part": "TODO — what does 'at scale' mean numerically here? Pages processed, events per day, or how long a full pass took. One number turns this from a claim into a system.",
+      "stack": ["Kafka", "Node.js"],
+      "featured": false
+    },
+    {
+      "slug": "oos-recovery-portal",
+      "title": "Out-of-stock recovery portal",
+      "org": "Pharmeasy",
+      "period": "Jul 2022 – Sep 2024",
+      "headline": "revenue recovery on failed orders",
+      "icon": "i-gauge",
+      "summary": "Built a customer-care portal that let agents offer equivalent substitutes on out-of-stock orders, with order and invoice state updating in real time — recovering revenue that would otherwise have been lost at checkout.",
+      "hard_part": "TODO — invoices and orders changing under an agent mid-call is a consistency problem. How did the portal avoid showing an agent stale state, or two agents editing the same order?",
+      "stack": ["Node.js", "MySQL"],
+      "featured": false
+    },
+    {
+      "slug": "sponsored-ads",
+      "title": "Sponsored ads on search results",
+      "org": "Pharmeasy",
+      "period": "Jul 2022 – Sep 2024",
+      "headline": "owned the service end to end",
+      "icon": "i-term",
+      "summary": "Owned the sponsored ads service on the search results page, shipping feature work and latency optimisations.",
+      "hard_part": "TODO — ads sit in the critical path of the search page, so every millisecond is a millisecond of everyone's search. What did the latency work actually change, and by how much?",
+      "stack": ["Node.js"],
+      "featured": false
+    },
+    {
+      "slug": "observability",
+      "title": "Per-service observability",
+      "org": "Pharmeasy",
+      "period": "Jul 2022 – Sep 2024",
+      "headline": "dashboards and alerting per service",
+      "icon": "i-activity",
+      "summary": "Built per-service Grafana dashboards with automated Slack and Google Chat alerting, so each service had its own view and its own pages rather than one shared wall of graphs.",
+      "hard_part": "TODO — optional. If you have a view on what makes an alert worth waking someone for, this is the place for it.",
+      "stack": ["Grafana"],
+      "featured": false
+    },
+    {
+      "slug": "ads-catalogue-sync",
+      "title": "Ads catalogue sync",
+      "org": "Pharmeasy · intern",
+      "period": "Jan – Jun 2022",
+      "headline": "cron pipelines to Google and Facebook Ads",
+      "icon": "i-drive",
+      "summary": "Built scheduled jobs syncing live product data — prices, discounts, availability — to Google and Facebook Ads, with S3 for feed storage. Added Redis caching to cut database load and API response times on the services underneath.",
+      "hard_part": "",
+      "stack": ["Node.js", "MySQL", "Redis", "AWS S3"],
+      "featured": false
+    }
+  ]
+}

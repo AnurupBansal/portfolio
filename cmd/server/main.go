@@ -1,8 +1,8 @@
 // Command server is the HTTP service behind anurupbansal.in.
 //
-// It serves the static site from an embedded filesystem (so the binary is the
-// entire deployable — no volume mounts, no files to sync) and exposes a health
-// endpoint. Caddy sits in front and handles TLS.
+// It serves the site — home, résumé and playground pages rendered from embedded
+// templates, plus health/trace/resume JSON endpoints — all from one binary with
+// no volume mounts or files to sync. Caddy sits in front and handles TLS.
 package main
 
 import (
@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AnurupBansal/portfolio/internal/resume"
 	"github.com/AnurupBansal/portfolio/internal/trace"
 	"github.com/AnurupBansal/portfolio/internal/web"
 )
@@ -40,9 +41,29 @@ func main() {
 		addr = ":8080"
 	}
 
+	// Load and validate the résumé before anything binds a port. A malformed
+	// resume.json is a build mistake, not a runtime condition — fail here and
+	// CI's post-deploy health poll never sees a healthy binary to promote.
+	r, err := resume.Load()
+	if err != nil {
+		logger.Error("loading resume", slog.Any("err", err))
+		os.Exit(1)
+	}
+	site, err := web.New(r)
+	if err != nil {
+		logger.Error("rendering site templates", slog.Any("err", err))
+		os.Exit(1)
+	}
+	// Surface what the author still owes the page: systems whose "hard part" is
+	// a TODO render summary-only, so this is a running to-do, not an error.
+	logger.Info("resume loaded",
+		slog.Int("systems", len(r.Systems)),
+		slog.Int("draft_hard_parts", r.DraftCount()),
+	)
+
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: routes(logger),
+		Handler: routes(logger, r, site),
 
 		// These matter more than they look on a box facing the open internet.
 		// Without them a slow client can hold a connection open indefinitely,
@@ -92,7 +113,7 @@ func main() {
 	logger.Info("shutdown complete")
 }
 
-func routes(logger *slog.Logger) http.Handler {
+func routes(logger *slog.Logger, r *resume.Resume, site *web.Server) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /api/health", handleHealth())
@@ -102,7 +123,13 @@ func routes(logger *slog.Logger) http.Handler {
 		BuildTime: buildTime,
 		Region:    os.Getenv("REGION"),
 	}))
-	mux.Handle("GET /", web.StaticHandler())
+	mux.Handle("GET /api/resume", r.JSONHandler())
+
+	// "/{$}" matches only the exact root; any other unregistered path falls
+	// through to the mux's built-in 404 rather than being served the index.
+	mux.HandleFunc("GET /{$}", site.Index())
+	mux.HandleFunc("GET /resume", site.Resume())
+	mux.HandleFunc("GET /playground", site.Playground())
 
 	return requestLogger(logger, mux)
 }
