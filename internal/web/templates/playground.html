@@ -54,6 +54,117 @@
     </button>
   </section>
 
+  <section class="section--tight" aria-labelledby="ratelimit-heading">
+    <div class="section-head">
+      <h2 id="ratelimit-heading">Rate limiter sandbox</h2>
+      <div class="rl__algo-toggles" role="tablist" aria-label="Rate limiting algorithm">
+        <button type="button" class="rl__algo-tab" id="rl-tab-tb" data-algo="token_bucket" aria-selected="true">
+          <span class="live-dot"></span>Token bucket
+        </button>
+        <button type="button" class="rl__algo-tab" id="rl-tab-sw" data-algo="sliding_window" aria-selected="false">
+          Sliding window
+        </button>
+      </div>
+    </div>
+
+    <p class="rl__intro" id="rl-intro-text" data-reveal style="--d:0ms">
+      An in-memory token bucket on this box. Permits short bursts up to 10 tokens, then meters
+      steady consumption to 2.0 tokens/second. Drive it below, fire a burst to trigger 429,
+      or run the <code>curl</code> command in your terminal.
+    </p>
+
+    <!-- Discrete 10-Cell Token / Window Meter -->
+    <div class="rl__meter" data-reveal style="--d:40ms">
+      <div class="rl__meter-head">
+        <span id="rl-meter-title">Available: <span class="val val--accent" id="rl-v-tokens">10.00</span> / 10 tokens</span>
+        <span id="rl-meter-meta">Refill: <span class="val">2.0 / s</span> &nbsp;·&nbsp; Full in: <span class="val" id="rl-v-reset">0.0s</span></span>
+      </div>
+
+      <div class="rl__cells" id="rl-cells">
+        <div class="rl__cell" data-idx="0" data-state="full"><div class="rl__cell-fill"></div>01</div>
+        <div class="rl__cell" data-idx="1" data-state="full"><div class="rl__cell-fill"></div>02</div>
+        <div class="rl__cell" data-idx="2" data-state="full"><div class="rl__cell-fill"></div>03</div>
+        <div class="rl__cell" data-idx="3" data-state="full"><div class="rl__cell-fill"></div>04</div>
+        <div class="rl__cell" data-idx="4" data-state="full"><div class="rl__cell-fill"></div>05</div>
+        <div class="rl__cell" data-idx="5" data-state="full"><div class="rl__cell-fill"></div>06</div>
+        <div class="rl__cell" data-idx="6" data-state="full"><div class="rl__cell-fill"></div>07</div>
+        <div class="rl__cell" data-idx="7" data-state="full"><div class="rl__cell-fill"></div>08</div>
+        <div class="rl__cell" data-idx="8" data-state="full"><div class="rl__cell-fill"></div>09</div>
+        <div class="rl__cell" data-idx="9" data-state="full"><div class="rl__cell-fill"></div>10</div>
+      </div>
+
+      <div class="rl__meter-ticks" id="rl-meter-ticks">
+        <span>0</span>
+        <span>2</span>
+        <span>4</span>
+        <span>6</span>
+        <span>8</span>
+        <span>10 tokens</span>
+      </div>
+    </div>
+
+    <!-- Actions Row -->
+    <div class="rl__actions" data-reveal style="--d:80ms">
+      <button type="button" class="chip-link" id="rl-btn-hit">
+        <svg width="13" height="13" aria-hidden="true"><use href="#i-zap"></use></svg><span id="rl-btn-hit-txt">Hit (1 token)</span>
+      </button>
+      <button type="button" class="chip-link" id="rl-btn-heavy">
+        <span id="rl-btn-heavy-txt">Heavy (3 tokens)</span>
+      </button>
+      <button type="button" class="chip-link chip-link--accent" id="rl-btn-burst">
+        <svg width="13" height="13" aria-hidden="true"><use href="#i-activity"></use></svg><span id="rl-btn-burst-txt">Burst (10 requests)</span>
+      </button>
+      <button type="button" class="chip-link chip-link--muted" id="rl-btn-reset">
+        Reset
+      </button>
+    </div>
+
+    <!-- Live Inspector & Headers -->
+    <div class="rl__inspector" data-reveal style="--d:120ms">
+      <div class="rl__status-row">
+        <span class="rl__status-badge" id="rl-status-code">STANDBY</span>
+        <span class="rl__status-msg" id="rl-status-msg">Click "Hit" or "Burst" above to evaluate rate limiter</span>
+        <span class="rl__status-latency" id="rl-latency">— ms</span>
+      </div>
+
+      <div class="rl__headers-grid">
+        <div class="rl__header-item">
+          <span class="rl__header-key">X-RateLimit-Limit</span>
+          <span class="rl__header-val" id="hdr-limit">10</span>
+        </div>
+        <div class="rl__header-item">
+          <span class="rl__header-key">X-RateLimit-Remaining</span>
+          <span class="rl__header-val rl__header-val--accent" id="hdr-remaining">10.00</span>
+        </div>
+        <div class="rl__header-item">
+          <span class="rl__header-key">X-RateLimit-Reset</span>
+          <span class="rl__header-val" id="hdr-reset">0.00s</span>
+        </div>
+        <div class="rl__header-item">
+          <span class="rl__header-key">Retry-After</span>
+          <span class="rl__header-val" id="hdr-retry">—</span>
+        </div>
+        <div class="rl__header-item">
+          <span class="rl__header-key">Server-Timing</span>
+          <span class="rl__header-val" id="hdr-timing">—</span>
+        </div>
+      </div>
+
+      <div class="rl__logs" id="rl-logs" role="log" aria-live="polite">
+        <div class="rl__log-line">
+          <span class="rl__log-time">--:--:--</span>
+          <span class="rl__log-tag">INFO</span>
+          <span class="rl__log-info">Limiter ready. 10 burst capacity.</span>
+        </div>
+      </div>
+
+      <div class="rl__curl-bar">
+        <code id="rl-curl-cmd">curl -i https://anurupbansal.in/api/ratelimit</code>
+        <button type="button" class="rl__copy-btn" id="rl-copy-btn">copy</button>
+      </div>
+    </div>
+  </section>
+
   <section class="section--tight">
     <div class="section-head">
       <h2>Build states</h2>
@@ -109,6 +220,10 @@
       <a class="endpoint" href="/api/trace">
         <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-net"></use></svg>/api/trace</span>
         <span class="endpoint__desc">The origin's own view of the request that fetched this page.</span>
+      </a>
+      <a class="endpoint" href="/api/ratelimit">
+        <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-zap"></use></svg>/api/ratelimit</span>
+        <span class="endpoint__desc">Live token bucket rate limiter — continuous refill & rate limit headers.</span>
       </a>
       <a class="endpoint" href="/api/resume">
         <span class="endpoint__name"><svg width="15" height="15" aria-hidden="true"><use href="#i-braces"></use></svg>/api/resume</span>
@@ -310,6 +425,291 @@
     } else {
       init();
     }
+  })();
+
+  // ---- Rate Limiter Sandbox Controller --------------------------------
+  (function () {
+    "use strict";
+
+    var BASE_URL = new URL("/api/ratelimit", location.origin).href;
+    var currentAlgo = "token_bucket"; // "token_bucket" | "sliding_window"
+
+    var capacity = 10.0;
+    var refillRate = 2.0;
+    var windowSec = 5.0;
+    var currentTokens = 10.0;
+    var lastSyncTime = performance.now();
+
+    // DOM Elements
+    var tabTB = document.getElementById("rl-tab-tb");
+    var tabSW = document.getElementById("rl-tab-sw");
+    var introTextEl = document.getElementById("rl-intro-text");
+
+    var meterTitleEl = document.getElementById("rl-meter-title");
+    var meterMetaEl = document.getElementById("rl-meter-meta");
+    var meterTicksEl = document.getElementById("rl-meter-ticks");
+
+    var cells = Array.prototype.slice.call(document.querySelectorAll(".rl__cell"));
+    var vTokensEl = document.getElementById("rl-v-tokens");
+    var vResetEl = document.getElementById("rl-v-reset");
+    var latencyEl = document.getElementById("rl-latency");
+
+    var statusCodeEl = document.getElementById("rl-status-code");
+    var statusMsgEl = document.getElementById("rl-status-msg");
+
+    var hdrLimitEl = document.getElementById("hdr-limit");
+    var hdrRemainingEl = document.getElementById("hdr-remaining");
+    var hdrResetEl = document.getElementById("hdr-reset");
+    var hdrRetryEl = document.getElementById("hdr-retry");
+    var hdrTimingEl = document.getElementById("hdr-timing");
+
+    var logsEl = document.getElementById("rl-logs");
+    var btnHit = document.getElementById("rl-btn-hit");
+    var btnHitTxt = document.getElementById("rl-btn-hit-txt");
+    var btnHeavy = document.getElementById("rl-btn-heavy");
+    var btnHeavyTxt = document.getElementById("rl-btn-heavy-txt");
+    var btnBurst = document.getElementById("rl-btn-burst");
+    var btnBurstTxt = document.getElementById("rl-btn-burst-txt");
+    var btnReset = document.getElementById("rl-btn-reset");
+    var copyBtn = document.getElementById("rl-copy-btn");
+    var curlCmdEl = document.getElementById("rl-curl-cmd");
+
+    if (!cells.length || !btnHit || !tabTB) return;
+
+    function setAlgorithm(algo) {
+      currentAlgo = algo;
+      var isTB = algo === "token_bucket";
+
+      tabTB.setAttribute("aria-selected", isTB ? "true" : "false");
+      tabSW.setAttribute("aria-selected", !isTB ? "true" : "false");
+
+      tabTB.innerHTML = isTB ? '<span class="live-dot"></span>Token bucket' : 'Token bucket';
+      tabSW.innerHTML = !isTB ? '<span class="live-dot"></span>Sliding window' : 'Sliding window';
+
+      if (isTB) {
+        introTextEl.textContent = "An in-memory token bucket on this box. Permits short bursts up to 10 tokens, then meters steady consumption to 2.0 tokens/second. Drive it below, fire a burst to trigger 429, or test via curl.";
+        btnHitTxt.textContent = "Hit (1 token)";
+        btnHeavyTxt.textContent = "Heavy (3 tokens)";
+        btnBurstTxt.textContent = "Burst (10 requests)";
+        meterTicksEl.innerHTML = "<span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10 tokens</span>";
+        curlCmdEl.textContent = "curl -i https://anurupbansal.in/api/ratelimit";
+      } else {
+        introTextEl.textContent = "A rolling sliding window on this box. Enforces max 10 requests in any rolling 5.0-second window by tracking timestamps. Firing 10 will immediately throttle until the window rolls.";
+        btnHitTxt.textContent = "Request (1 hit)";
+        btnHeavyTxt.textContent = "Batch (3 hits)";
+        btnBurstTxt.textContent = "Burst (10 hits)";
+        meterTicksEl.innerHTML = "<span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10 requests</span>";
+        curlCmdEl.textContent = 'curl -i "https://anurupbansal.in/api/ratelimit?algo=sliding_window"';
+      }
+
+      syncStatus();
+    }
+
+    function updateGauge(tokens) {
+      currentTokens = Math.max(0, Math.min(capacity, tokens));
+
+      if (currentAlgo === "token_bucket") {
+        meterTitleEl.innerHTML = 'Available: <span class="val val--accent" id="rl-v-tokens">' + currentTokens.toFixed(2) + '</span> / ' + capacity + ' tokens';
+        var tokensNeeded = Math.max(0, capacity - currentTokens);
+        var resetSec = refillRate > 0 ? (tokensNeeded / refillRate) : 0;
+        meterMetaEl.innerHTML = 'Refill: <span class="val">' + refillRate.toFixed(1) + ' / s</span> &nbsp;·&nbsp; Full in: <span class="val" id="rl-v-reset">' + resetSec.toFixed(1) + 's</span>';
+      } else {
+        meterTitleEl.innerHTML = 'Available in window: <span class="val val--accent" id="rl-v-tokens">' + Math.floor(currentTokens) + '</span> / ' + capacity + ' requests';
+        var resetVal = vResetEl ? vResetEl.textContent : '0.0s';
+        meterMetaEl.innerHTML = 'Window: <span class="val">' + windowSec.toFixed(1) + 's rolling</span> &nbsp;·&nbsp; Oldest reset in: <span class="val" id="rl-v-reset">' + resetVal + '</span>';
+      }
+
+      cells.forEach(function (cell, idx) {
+        var fill = cell.querySelector(".rl__cell-fill");
+        if (currentTokens >= idx + 1) {
+          cell.setAttribute("data-state", "full");
+          if (fill) fill.style.height = "0%";
+        } else if (currentTokens <= idx) {
+          cell.setAttribute("data-state", "empty");
+          if (fill) fill.style.height = "0%";
+        } else {
+          cell.setAttribute("data-state", "active");
+          var frac = currentTokens - idx;
+          if (fill) fill.style.height = (frac * 100).toFixed(0) + "%";
+        }
+      });
+    }
+
+    function tick() {
+      var now = performance.now();
+      var dt = (now - lastSyncTime) / 1000;
+      lastSyncTime = now;
+      if (currentAlgo === "token_bucket" && currentTokens < capacity) {
+        updateGauge(currentTokens + (dt * refillRate));
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    function addLog(status, tag, info) {
+      var d = new Date();
+      var timeStr = [
+        String(d.getHours()).padStart(2, "0"),
+        String(d.getMinutes()).padStart(2, "0"),
+        String(d.getSeconds()).padStart(2, "0") + "." + String(Math.floor(d.getMilliseconds() / 100))
+      ].join(":");
+
+      var line = document.createElement("div");
+      line.className = "rl__log-line";
+
+      var timeSpan = document.createElement("span");
+      timeSpan.className = "rl__log-time";
+      timeSpan.textContent = timeStr;
+
+      var tagSpan = document.createElement("span");
+      tagSpan.className = "rl__log-tag " + (status === 200 ? "rl__log-tag--200" : "rl__log-tag--429");
+      tagSpan.textContent = tag;
+
+      var infoSpan = document.createElement("span");
+      infoSpan.className = "rl__log-info";
+      infoSpan.textContent = info;
+
+      line.appendChild(timeSpan);
+      line.appendChild(tagSpan);
+      line.appendChild(infoSpan);
+
+      logsEl.insertBefore(line, logsEl.firstChild);
+      while (logsEl.children.length > 8) {
+        logsEl.removeChild(logsEl.lastChild);
+      }
+    }
+
+    function renderResponse(status, data, headers, latencyMs) {
+      if (latencyEl) latencyEl.textContent = latencyMs.toFixed(1) + " ms";
+
+      var limit = headers.get("X-RateLimit-Limit") || String(data.capacity || capacity);
+      var remaining = headers.get("X-RateLimit-Remaining") || (typeof data.tokens_remaining === "number" ? data.tokens_remaining.toFixed(2) : "—");
+      var reset = headers.get("X-RateLimit-Reset") || (typeof data.reset_sec === "number" ? data.reset_sec.toFixed(2) + "s" : "0.00s");
+      var retry = headers.get("Retry-After") || (data.retry_after_sec ? data.retry_after_sec + "s" : "—");
+      var timing = headers.get("Server-Timing") || (data.wait_ms ? "wait=" + data.wait_ms + "ms" : "app=0.08ms");
+
+      if (hdrLimitEl) hdrLimitEl.textContent = limit;
+      if (hdrRemainingEl) hdrRemainingEl.textContent = remaining;
+      if (hdrResetEl) hdrResetEl.textContent = reset.endsWith("s") ? reset : reset + "s";
+      if (hdrRetryEl) hdrRetryEl.textContent = retry;
+      if (hdrTimingEl) hdrTimingEl.textContent = timing;
+
+      if (typeof data.capacity === "number") capacity = data.capacity;
+      if (typeof data.refill_rate_per_sec === "number") refillRate = data.refill_rate_per_sec;
+      if (typeof data.window_sec === "number") windowSec = data.window_sec;
+      if (typeof data.tokens_remaining === "number") {
+        updateGauge(data.tokens_remaining);
+      }
+
+      if (status === 200) {
+        statusCodeEl.className = "rl__status-badge rl__status-badge--ok";
+        statusCodeEl.textContent = "200 OK";
+        var itemUnit = currentAlgo === "token_bucket" ? "tokens left" : "requests remaining in window";
+        statusMsgEl.textContent = "Request allowed · " + remaining + " " + itemUnit;
+        if (hdrRemainingEl) hdrRemainingEl.className = "rl__header-val rl__header-val--accent";
+        if (hdrRetryEl) hdrRetryEl.className = "rl__header-val";
+      } else {
+        statusCodeEl.className = "rl__status-badge rl__status-badge--429";
+        statusCodeEl.textContent = "429 THROTTLED";
+        statusMsgEl.textContent = "Rate limit exceeded · retry in " + retry;
+        if (hdrRemainingEl) hdrRemainingEl.className = "rl__header-val rl__header-val--danger";
+        if (hdrRetryEl) hdrRetryEl.className = "rl__header-val rl__header-val--danger";
+      }
+    }
+
+    function executeHit(cost) {
+      var t0 = performance.now();
+      var url = BASE_URL + "?cost=" + cost + "&algo=" + currentAlgo;
+      return fetch(url, {
+        method: "POST",
+        headers: { "Accept": "application/json" }
+      }).then(function (res) {
+        var dur = performance.now() - t0;
+        return res.json().then(function (body) {
+          renderResponse(res.status, body, res.headers, dur);
+          var algoTag = currentAlgo === "token_bucket" ? "TB" : "SW";
+          var info = res.status === 200
+            ? "[" + algoTag + "] cost=" + cost + " → " + body.tokens_remaining.toFixed(2) + " remaining (" + dur.toFixed(1) + "ms)"
+            : "[" + algoTag + "] deficit=" + (cost - body.tokens_remaining).toFixed(2) + " → retry in " + (body.retry_after_sec || 1) + "s";
+          addLog(res.status, res.status === 200 ? "200 OK" : "429 RATE", info);
+          return res.status;
+        });
+      }).catch(function (err) {
+        statusCodeEl.className = "rl__status-badge rl__status-badge--429";
+        statusCodeEl.textContent = "ERR";
+        statusMsgEl.textContent = "Fetch failed: " + err.message;
+      });
+    }
+
+    function executeBurst(count) {
+      btnBurst.disabled = true;
+      btnHit.disabled = true;
+      btnHeavy.disabled = true;
+      statusMsgEl.textContent = "Blasting " + count + " parallel requests…";
+
+      var reqs = [];
+      for (var i = 0; i < count; i++) {
+        reqs.push(executeHit(1));
+      }
+
+      Promise.all(reqs).then(function (results) {
+        var passed = results.filter(function (s) { return s === 200; }).length;
+        var rejected = results.length - passed;
+        statusMsgEl.textContent = "Burst complete: " + passed + " passed (200), " + rejected + " throttled (429)";
+      }).finally(function () {
+        btnBurst.disabled = false;
+        btnHit.disabled = false;
+        btnHeavy.disabled = false;
+      });
+    }
+
+    function executeReset() {
+      var url = BASE_URL + "/reset?algo=" + currentAlgo;
+      fetch(url, { method: "POST" })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          updateGauge(capacity);
+          statusCodeEl.className = "rl__status-badge rl__status-badge--ok";
+          statusCodeEl.textContent = "RESET";
+          statusMsgEl.textContent = "Limiter reset to " + capacity + (currentAlgo === "token_bucket" ? " tokens" : " requests");
+          addLog(200, "RESET", "[" + (currentAlgo === "token_bucket" ? "TB" : "SW") + "] Restored to " + capacity + " capacity");
+        });
+    }
+
+    function syncStatus() {
+      var url = BASE_URL + "/status?algo=" + currentAlgo;
+      fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (typeof data.tokens_remaining === "number") {
+            capacity = data.capacity || 10;
+            refillRate = data.refill_rate_per_sec || 2;
+            windowSec = data.window_sec || 5;
+            updateGauge(data.tokens_remaining);
+          }
+        }).catch(function () {});
+    }
+
+    tabTB.addEventListener("click", function () { setAlgorithm("token_bucket"); });
+    tabSW.addEventListener("click", function () { setAlgorithm("sliding_window"); });
+
+    btnHit.addEventListener("click", function () { executeHit(1); });
+    btnHeavy.addEventListener("click", function () { executeHit(3); });
+    btnBurst.addEventListener("click", function () { executeBurst(10); });
+    btnReset.addEventListener("click", executeReset);
+
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        var cmd = curlCmdEl ? curlCmdEl.textContent : "curl -i https://anurupbansal.in/api/ratelimit";
+        navigator.clipboard.writeText(cmd).then(function () {
+          var orig = copyBtn.textContent;
+          copyBtn.textContent = "copied!";
+          setTimeout(function () { copyBtn.textContent = orig; }, 1500);
+        });
+      });
+    }
+
+    syncStatus();
   })();
 </script>
 {{template "footer" .}}
