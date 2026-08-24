@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AnurupBansal/portfolio/internal/ratelimit"
 	"github.com/AnurupBansal/portfolio/internal/resume"
 	"github.com/AnurupBansal/portfolio/internal/trace"
 	"github.com/AnurupBansal/portfolio/internal/web"
@@ -124,6 +125,12 @@ func routes(logger *slog.Logger, r *resume.Resume, site *web.Server) http.Handle
 		Region:    os.Getenv("REGION"),
 	}))
 	mux.Handle("GET /api/resume", r.JSONHandler())
+
+	limiter := ratelimit.NewLimiter(10, 2)
+	mux.Handle("GET /api/ratelimit", limiter.HitHandler())
+	mux.Handle("POST /api/ratelimit", limiter.HitHandler())
+	mux.Handle("GET /api/ratelimit/status", limiter.StatusHandler())
+	mux.Handle("POST /api/ratelimit/reset", limiter.ResetHandler())
 
 	// "/{$}" matches only the exact root; any other unregistered path falls
 	// through to the mux's built-in 404 rather than being served the index.
